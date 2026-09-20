@@ -28,13 +28,19 @@ export async function evaluate(input: unknown, transport: typeof fetch = fetch) 
   const parsed = evaluationInput.safeParse(input);
   if (!parsed.success) throw new EvaluationError(parsed.error.issues[0].message, 400);
   const { text, apiKey, scenario } = parsed.data;
+  const json = await requestTypeSafe(buildEvaluation(text,scenario),apiKey,transport);
+  const result = resultSchema(scenarios[scenario]).safeParse(json);
+  if (!result.success) throw new EvaluationError('TypeSafeの応答形式が想定と異なります。再実行してください。');
+  return result.data as Evaluation;
+}
+export async function requestTypeSafe(body:unknown,apiKey:string,transport:typeof fetch=fetch){
   const signal = AbortSignal.timeout(25000);
   let response: Response;
   try {
     response = await transport('https://api.typesafe.ai/v1/systemone', {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify(buildEvaluation(text,scenario)),
+      body: JSON.stringify(body),
       signal,
       // Cloudflare Workers supports follow/manual only. Never forward the key to a redirect.
       redirect: 'manual',
@@ -62,7 +68,5 @@ export async function evaluate(input: unknown, transport: typeof fetch = fetch) 
   let json: unknown;
   try { json = await response.json(); }
   catch { throw new EvaluationError('TypeSafeの応答を読み取れませんでした。'); }
-  const result = resultSchema(scenarios[scenario]).safeParse(json);
-  if (!result.success) throw new EvaluationError('TypeSafeの応答形式が想定と異なります。再実行してください。');
-  return result.data as Evaluation;
+  return json;
 }
