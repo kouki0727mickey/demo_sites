@@ -1,9 +1,10 @@
+import {ensureJevCatalog} from '@/db/jev-catalog';
 import {authorizeSiteEdit} from '@/lib/site-access';
 import {siteDatabase} from '@/db/sites';
 const categories=['EC・ショッピング','旅行・予約','フード・飲食','SNS・コミュニティ','住まい・不動産','その他'];
 function parseSite(input:unknown){if(!input||typeof input!=='object')throw new Error('入力内容を確認してください。');const s=input as Record<string,unknown>;const out:Record<string,string>={};for(const [key,max] of Object.entries({name:80,url:2048,category:40,description:500,tags:200,status:20})){if(typeof s[key]!=='string'||(s[key] as string).length>max)throw new Error('入力内容が正しくありません。');out[key]=(s[key] as string).trim();}if(!out.name||!categories.includes(out.category)||!['利用中','準備中','休止中'].includes(out.status))throw new Error('名前・カテゴリ・状態を確認してください。');if(out.url){let u;try{u=new URL(out.url);}catch{throw new Error('正しいURLを入力してください。');}if(!['https:','http:'].includes(u.protocol)||u.username||u.password)throw new Error('http / https のURLを入力してください。');out.url=u.href;}if(out.status==='利用中'&&!out.url)throw new Error('利用中のサイトにはURLを入力してください。');return out;}
 function allowed(req:Request){const origin=req.headers.get('origin');return !origin||origin===new URL(req.url).origin;}
-export async function GET(){try{const {results}=await siteDatabase().prepare('SELECT * FROM sites ORDER BY created_at DESC,id').all();return Response.json(results,{headers:{'Cache-Control':'no-store'}});}catch(e){console.error(e);return Response.json({error:'サイト一覧を読み込めませんでした。再読み込みしてください。'},{status:503});}}
+export async function GET(){try{const db=siteDatabase();await ensureJevCatalog(db);const {results}=await db.prepare('SELECT * FROM sites ORDER BY created_at DESC,id').all();return Response.json(results,{headers:{'Cache-Control':'no-store'}});}catch(e){console.error(e);return Response.json({error:'サイト一覧を読み込めませんでした。再読み込みしてください。'},{status:503});}}
 export async function POST(req:Request){return mutate(req,'POST');}
 export async function PUT(req:Request){return mutate(req,'PUT');}
 export async function DELETE(req:Request){return mutate(req,'DELETE');}
