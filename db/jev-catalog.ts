@@ -10,6 +10,7 @@ export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/h
 export async function ensureJevCatalog(db:D1Database){
  await install(db,release,newJevSites);
  await install(db,'jev-harness-2026-09-21',harnessSites);
+ await install(db,'jev-browser-2026-09-21',[{id:'jev-browser',name:'Jev Browser Lab',path:'/jev/browser',description:'フライト検索画面を自動操作。DOMの観測・Jevの操作選択・実行履歴を見ながらブラウザエージェントを体験。',tags:'Jev,ブラウザ操作,エージェント'}]);
 }
 async function install(db:D1Database,release:string,entries:typeof newJevSites){
   if(await db.prepare('SELECT key FROM catalog_installs WHERE key = ?').bind(release).first())return;

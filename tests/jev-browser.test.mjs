@@ -1,0 +1,7 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {evaluateBrowser} from '../app/jev/browser/engine.ts';
+const input={apiKey:'test-key',goal:'Find Tokyo flights',state:'[1] select departure = Osaka',actions:[{id:'a0',label:'SELECT Tokyo'},{id:'a1',label:'BLOCKED'}]};
+test('uses only observed action candidates and returns validated choice',async()=>{const result=await evaluateBrowser(input,async(url,init)=>{const body=JSON.parse(init.body);assert.equal(url,'https://api.typesafe.ai/v1/systemone');assert.deepEqual(body.questions.action.criteria,{a0:'SELECT Tokyo',a1:'BLOCKED'});assert.equal(JSON.parse(body.state).page,input.state);assert.ok(!init.body.includes(input.apiKey));return Response.json({answers:{action:{type:'choice',choice:'a0',confidence:.9,probabilities:{a0:.9,a1:.1}}}});});assert.equal(result.choice,'a0');});
+test('rejects invented actions, invalid probabilities and duplicate IDs',async()=>{await assert.rejects(()=>evaluateBrowser({...input,actions:[input.actions[0],input.actions[0]]},()=>{throw Error('must not call')}),e=>e.status===400);for(const [choice,confidence] of [['shell',.9],['a0',2]])await assert.rejects(()=>evaluateBrowser(input,async()=>Response.json({answers:{action:{type:'choice',choice,confidence,probabilities:{}}}})),e=>e.status===502);});
+test('redirects and authorization errors never become browser actions',async()=>{for(const status of [302,401])await assert.rejects(()=>evaluateBrowser(input,async()=>new Response(null,{status})),e=>e.status===502);});
