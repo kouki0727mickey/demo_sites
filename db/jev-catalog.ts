@@ -8,6 +8,7 @@ export const newJevSites = [
 ];
 export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
+ await install(db,'jev-shopping-2026-09-21',[{id:'jev-shopping',name:'Jev Shopping Lab',path:'/jev/shopping',description:'カテゴリ・予算・並び順を自動操作し、商品を検索・比較。Jevによる操作選択と実行履歴を確認できます。',tags:'Jev,ブラウザ操作,商品比較'}]);
  await install(db,release,newJevSites);
  await install(db,'jev-harness-2026-09-21',harnessSites);
  await install(db,'jev-browser-2026-09-21',[{id:'jev-browser',name:'Jev Browser Lab',path:'/jev/browser',description:'フライト検索画面を自動操作。DOMの観測・Jevの操作選択・実行履歴を見ながらブラウザエージェントを体験。',tags:'Jev,ブラウザ操作,エージェント'}]);
