@@ -8,6 +8,7 @@ export const newJevSites = [
 ];
 export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
+ await install(db,'jev-2048-2026-09-21',[{id:'jev-2048',name:'2048 Arena — 人間 vs Jev',path:'/jev/2048',description:'同じ初期盤面から2048をプレイ。人間の操作とJevの判断を、スコア・手数・最大タイルで比較。',tags:'Jev,2048,ゲーム,比較'}]);
  await install(db,'jev-shopping-2026-09-21',[{id:'jev-shopping',name:'Jev Shopping Lab',path:'/jev/shopping',description:'カテゴリ・予算・並び順を自動操作し、商品を検索・比較。Jevによる操作選択と実行履歴を確認できます。',tags:'Jev,ブラウザ操作,商品比較'}]);
  await install(db,release,newJevSites);
  await install(db,'jev-harness-2026-09-21',harnessSites);
