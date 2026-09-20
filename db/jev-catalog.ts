@@ -6,11 +6,16 @@ export const newJevSites = [
   {id:'jev-leads',name:'Jev 営業リード判定',path:'/jev/leads',description:'問い合わせや商談メモから検討段階・導入意欲・デモ提案の適切さを判定。',tags:'Jev,営業,商談'},
   {id:'jev-tasks',name:'Jev タスク優先度判定',path:'/jev/tasks',description:'依頼文から優先度・業務への影響・期限の有無を判定し、対応順の判断を補助。',tags:'Jev,タスク,優先度'},
 ];
+export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
+ await install(db,release,newJevSites);
+ await install(db,'jev-harness-2026-09-21',harnessSites);
+}
+async function install(db:D1Database,release:string,entries:typeof newJevSites){
   if(await db.prepare('SELECT key FROM catalog_installs WHERE key = ?').bind(release).first())return;
   const now=new Date().toISOString();
   await db.batch([
-    ...newJevSites.map(s=>db.prepare(`INSERT OR IGNORE INTO sites
+    ...entries.map(s=>db.prepare(`INSERT OR IGNORE INTO sites
       (id,name,url,category,description,tags,status,created_at)
       SELECT ?,?,?,?,?,?,?,?
       WHERE NOT EXISTS (SELECT 1 FROM catalog_installs WHERE key = ?)
