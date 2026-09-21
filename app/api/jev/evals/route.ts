@@ -1,0 +1,3 @@
+import {judge} from '@/app/jev/evals/engine';
+import {EvaluationError} from '@/app/jev/engine';
+export async function POST(request:Request){const headers={'Cache-Control':'no-store'};const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin)return Response.json({error:'この操作は許可されていません。'},{status:403,headers});try{const raw=await request.text();if(raw.length>20000)return Response.json({error:'入力が長すぎます。'},{status:413,headers});let body:unknown;try{body=JSON.parse(raw)}catch{return Response.json({error:'入力形式を確認してください。'},{status:400,headers})}return Response.json(await judge(body),{headers});}catch(e){return Response.json({error:e instanceof EvaluationError?e.message:'評価に失敗しました。'},{status:e instanceof EvaluationError?e.status:500,headers})}}

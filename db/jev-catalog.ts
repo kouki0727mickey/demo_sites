@@ -12,7 +12,7 @@ export async function ensureJevCatalog(db:D1Database){
  {id:'qwen-comfyui',name:'ComfyUI — 透過ワークフロー',path:'/qwen-image/comfyui',description:'ColabでComfyUIとQwenの実モデルを実行。生成・編集したPNGを読み込み、透過を確認します。',tags:'Qwen,ComfyUI,透過,学習'},
  {id:'qwen-inference',name:'推論Lab — vLLM-Omni / SGLang',path:'/qwen-image/inference',description:'ColabでvLLM-OmniとSGLangを実行。同じ設定で得た画像と、モデル読込を含む実行時間を比較します。',tags:'Qwen,vLLM,SGLang,GPU'},
  {id:'qwen-prompt-rewrite',name:'Prompt Lab — 依頼を具体化',path:'/qwen-image/prompt-rewrite',description:'ColabでPE-T2I・PE-I2Iを実行。実モデルの書き換え文を読み込み、Alpha Labへ引き継ぎます。',tags:'Qwen,プロンプト,編集,学習'},
- {id:'jev-evals',name:'Jev Eval Lab — 正しさと安定性',path:'/jev/evals',description:'ColabからJevの実APIで繰り返し判定。人間の合否との一致率・スコア分散・応答時間を確認します。',tags:'Jev,LangChain,評価,比較'}
+ {id:'jev-evals',name:'Jev Eval Lab — 正しさと安定性',path:'/jev/evals',description:'サイト内からJevの実APIで繰り返し判定。GPU・Colab不要で、一致率・スコア分散・応答時間を確認します。',tags:'Jev,LangChain,評価,比較'}
  ]);
 
  await install(db,'qwen-image-2026-09-21',[{id:'qwen-image',name:'Qwen Image 2.1 — Alpha Lab',path:'/qwen-image',description:'公式デモで画像生成・最大10枚の参照画像編集。背景切り替えと画素解析で透過を確認できます。',tags:'Qwen,画像生成,透過,RGBA'}]);
@@ -23,6 +23,7 @@ export async function ensureJevCatalog(db:D1Database){
  await install(db,'jev-harness-2026-09-21',harnessSites);
  await install(db,'jev-browser-2026-09-21',[{id:'jev-browser',name:'Jev Browser Lab',path:'/jev/browser',description:'フライト検索画面を自動操作。DOMの観測・Jevの操作選択・実行履歴を見ながらブラウザエージェントを体験。',tags:'Jev,ブラウザ操作,エージェント'}]);
  await refreshColabDescriptions(db);
+ await refreshWebEvalDescription(db);
 }
 async function install(db:D1Database,release:string,entries:typeof newJevSites){
   if(await db.prepare('SELECT key FROM catalog_installs WHERE key = ?').bind(release).first())return;
@@ -45,5 +46,14 @@ async function refreshColabDescriptions(db:D1Database){
  await db.batch([
   ...updates.map(([id,oldDescription,newDescription])=>db.prepare('UPDATE sites SET description = ? WHERE id = ? AND description = ?').bind(newDescription,id,oldDescription)),
   db.prepare('INSERT OR IGNORE INTO catalog_installs (key,applied_at) VALUES (?,?)').bind(key,new Date().toISOString()),
+ ]);
+}
+
+async function refreshWebEvalDescription(db:D1Database){
+ const key='jev-web-evals-2026-09-21';
+ if(await db.prepare('SELECT key FROM catalog_installs WHERE key = ?').bind(key).first())return;
+ await db.batch([
+ db.prepare('UPDATE sites SET description = ? WHERE id = ? AND description = ?').bind('サイト内からJevの実APIで繰り返し判定。GPU・Colab不要で、一致率・スコア分散・応答時間を確認します。','jev-evals','ColabからJevの実APIで繰り返し判定。人間の合否との一致率・スコア分散・応答時間を確認します。'),
+ db.prepare('INSERT OR IGNORE INTO catalog_installs (key,applied_at) VALUES (?,?)').bind(key,new Date().toISOString()),
  ]);
 }

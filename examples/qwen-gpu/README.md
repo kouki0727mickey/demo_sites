@@ -4,8 +4,8 @@
 
 [Colabで開く](https://colab.research.google.com/github/kouki0727mickey/demo_sites/blob/main/public/notebooks/qwen-image-2.1.ipynb)
 
-GPUランタイムを選び、上から実行。まず1024px・40steps・seed42で生成、PNGを保存します。
-無料GPUの動作保証はありません。最低VRAM/RAMは未検証です。CPUオフロードは通常RAMを消費します。
+GPUランタイムを選び、上から実行。古いランタイムを再起動し、最新版を開いて512px・40steps・seed42で生成、PNGを保存します。
+T4ではサブモジュール単位のCPUオフロード、VAEタイル処理、KVキャッシュ無効化を使います。遅くなる代わりにVRAM使用量を抑えます。まだ不足する場合は再起動後384px／256pxに下げてください。通常RAMにも数十GBの余裕が必要になるため、無料GPUの動作保証はありません。最低VRAM/RAMは未検証です。CPUオフロードは通常RAMを消費します。
 このノートブックは対話的な実験専用で、公開APIやトンネルは起動しません。
 
 ## 2. 専用GPUからサイトへ接続
