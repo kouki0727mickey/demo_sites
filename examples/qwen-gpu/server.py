@@ -1,6 +1,7 @@
 """Single-worker GPU service. Put behind HTTPS; never run as a public Colab service."""
 import asyncio
 import io
+import logging
 import os
 import secrets
 import time
@@ -56,6 +57,7 @@ async def run(job_id, prompt, size, seed, steps, images):
         image.save(buf, format='PNG')
         jobs[job_id].update(status='complete', image=buf.getvalue())
     except Exception:
+        logging.exception('Qwen GPU inference failed')
         jobs[job_id].update(status='error', error='生成に失敗しました。GPUメモリ・サーバーログを確認してください。')
     finally:
         for image in images:
