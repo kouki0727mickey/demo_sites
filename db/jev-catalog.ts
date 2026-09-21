@@ -8,6 +8,13 @@ export const newJevSites = [
 ];
 export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
+ await install(db,'interactive-notes-2026-09-21',[
+ {id:'qwen-comfyui',name:'ComfyUI — 透過ワークフロー',path:'/qwen-image/comfyui',description:'生成・編集の4工程をたどり、公式PNGのアルファを解析。ComfyUIの透過生成を学ぶデモ。',tags:'Qwen,ComfyUI,透過,学習'},
+ {id:'qwen-inference',name:'推論Lab — vLLM-Omni / SGLang',path:'/qwen-image/inference',description:'キャッシュ・FP8・GPU並列化を操作して理解。計算の再利用を可視化する学習シミュレーション。',tags:'Qwen,vLLM,SGLang,GPU'},
+ {id:'qwen-prompt-rewrite',name:'Prompt Lab — 依頼を具体化',path:'/qwen-image/prompt-rewrite',description:'生成用と編集用の違いを体験。条件を足して文章を組み立て、Alpha Labに引き継ぐデモ。',tags:'Qwen,プロンプト,編集,学習'},
+ {id:'jev-evals',name:'Jev Eval Lab — 正しさと安定性',path:'/jev/evals',description:'合成スコアで正解率と分散の違いを体験。LangChainの検証値とコスト試算も確認できます。',tags:'Jev,LangChain,評価,比較'}
+ ]);
+
  await install(db,'qwen-image-2026-09-21',[{id:'qwen-image',name:'Qwen Image 2.1 — Alpha Lab',path:'/qwen-image',description:'公式デモで画像生成・最大10枚の参照画像編集。背景切り替えと画素解析で透過を確認できます。',tags:'Qwen,画像生成,透過,RGBA'}]);
  await install(db,'jev-2048-plus-2026-09-21',[{id:'jev-2048-plus',name:'2048 Arena＋ — 先読み比較',path:'/jev/2048-plus',description:'元の2048を残した改良版。従来のJev・先読み付きJev・先読みのみを同じシードで比較。',tags:'Jev,2048,先読み,比較'}]);
  await install(db,'jev-2048-2026-09-21',[{id:'jev-2048',name:'2048 Arena — 人間 vs Jev',path:'/jev/2048',description:'同じ初期盤面から2048をプレイ。人間の操作とJevの判断を、スコア・手数・最大タイルで比較。',tags:'Jev,2048,ゲーム,比較'}]);

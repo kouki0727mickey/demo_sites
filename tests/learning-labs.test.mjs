@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {cacheWork,rewritePrompt,syntheticScores,scoreStats} from '../app/labs/math.ts';
+test('cache computes fixed prefix once and keeps every image update',()=>{assert.deepEqual(cacheWork(40,60,false),{baseline:40,work:40,saved:0,prefixRuns:40});const r=cacheWork(40,60,true);assert.equal(r.work,16.6);assert.equal(r.prefixRuns,1);assert.ok(Math.abs(r.saved-58.5)<1e-10);});
+test('editing preserves instruction and uses one aspect ratio source',()=>{const result=rewritePrompt('i2i','Remove background',{style:'photo',composition:'center',lighting:'soft',preserve:'identity',ratio:'16:9',transparent:true});assert.equal(result.wh_ratio,'');assert.equal(result.ratio_follow,'<image1>');assert.match(result.rewritten_prompt,/Remove background/);assert.match(result.rewritten_prompt,/identity/);assert.match(result.rewritten_prompt,/alpha channel/);});
+test('stable wrong judges demonstrate that low variance does not ensure correctness',()=>{const good=scoreStats(syntheticScores('stable',100,.9),.9,.5);const wrong=scoreStats(syntheticScores('wrong',100,.9),.9,.5);assert.equal(good.agreement,1);assert.equal(wrong.agreement,0);assert.ok(Math.abs(good.variance-wrong.variance)<1e-12);});
