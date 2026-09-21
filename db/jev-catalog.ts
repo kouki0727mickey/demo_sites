@@ -8,6 +8,7 @@ export const newJevSites = [
 ];
 export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
+ await install(db,'qwen-image-2026-09-21',[{id:'qwen-image',name:'Qwen Image 2.1 — Alpha Lab',path:'/qwen-image',description:'公式デモで画像生成・最大10枚の参照画像編集。背景切り替えと画素解析で透過を確認できます。',tags:'Qwen,画像生成,透過,RGBA'}]);
  await install(db,'jev-2048-plus-2026-09-21',[{id:'jev-2048-plus',name:'2048 Arena＋ — 先読み比較',path:'/jev/2048-plus',description:'元の2048を残した改良版。従来のJev・先読み付きJev・先読みのみを同じシードで比較。',tags:'Jev,2048,先読み,比較'}]);
  await install(db,'jev-2048-2026-09-21',[{id:'jev-2048',name:'2048 Arena — 人間 vs Jev',path:'/jev/2048',description:'同じ初期盤面から2048をプレイ。人間の操作とJevの判断を、スコア・手数・最大タイルで比較。',tags:'Jev,2048,ゲーム,比較'}]);
  await install(db,'jev-shopping-2026-09-21',[{id:'jev-shopping',name:'Jev Shopping Lab',path:'/jev/shopping',description:'カテゴリ・予算・並び順を自動操作し、商品を検索・比較。Jevによる操作選択と実行履歴を確認できます。',tags:'Jev,ブラウザ操作,商品比較'}]);
