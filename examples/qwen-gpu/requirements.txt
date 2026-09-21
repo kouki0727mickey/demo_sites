@@ -1,0 +1,8 @@
+torch>=2.4.0
+transformers>=5.17
+accelerate
+pillow
+git+https://github.com/huggingface/diffusers
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.18
