@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {parseReport,evalStats,comparable} from '../app/labs/colab-result.ts';
+const config={schema:'atlas-colab-config-v1',kind:'evals',prompt:'test',mode:'generate',transparent:false,size:1024,steps:40,seed:42,repetitions:2,evidence:'sunny',answer:'sunny',human_pass:true};
+const report={schema:'atlas-colab-result-v1',kind:'evals',created_at:'2026-09-21T00:00:00+00:00',engine:'jev',model:'jev-test',elapsed_seconds:1,environment:{gpu:'CPU',python:'3.12'},config,timing_scope:'api_round_trip',rows:[{probability:.9,score:1,seconds:.4},{probability:.4,score:.5,seconds:.6}]};
+test('imported real-run structure computes agreement, variance and time from rows',()=>{const parsed=parseReport(JSON.stringify(report),'evals');assert.deepEqual(evalStats(parsed),{mean:.75,variance:.0625,agreement:.5,seconds:.5});});
+test('wrong lab, incomplete run, invalid score and remote image URL are rejected',()=>{assert.throws(()=>parseReport(JSON.stringify(report),'comfyui'));assert.throws(()=>parseReport(JSON.stringify({...report,rows:report.rows.slice(0,1)}),'evals'));assert.throws(()=>parseReport(JSON.stringify({...report,rows:[{probability:2,score:0,seconds:1},report.rows[1]]}),'evals'));assert.throws(()=>parseReport(JSON.stringify({...report,image:'https://evil.example/image.png'}),'evals'));});
+test('comparison flags different generation settings and GPUs',()=>{assert.equal(comparable(report,report),true);assert.equal(comparable(report,{...report,config:{...config,seed:43}}),false);assert.equal(comparable(report,{...report,environment:{gpu:'other',python:'3.12'}}),false);});

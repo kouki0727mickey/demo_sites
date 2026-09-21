@@ -9,10 +9,10 @@ export const newJevSites = [
 export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
  await install(db,'interactive-notes-2026-09-21',[
- {id:'qwen-comfyui',name:'ComfyUI — 透過ワークフロー',path:'/qwen-image/comfyui',description:'生成・編集の4工程をたどり、公式PNGのアルファを解析。ComfyUIの透過生成を学ぶデモ。',tags:'Qwen,ComfyUI,透過,学習'},
- {id:'qwen-inference',name:'推論Lab — vLLM-Omni / SGLang',path:'/qwen-image/inference',description:'キャッシュ・FP8・GPU並列化を操作して理解。計算の再利用を可視化する学習シミュレーション。',tags:'Qwen,vLLM,SGLang,GPU'},
- {id:'qwen-prompt-rewrite',name:'Prompt Lab — 依頼を具体化',path:'/qwen-image/prompt-rewrite',description:'生成用と編集用の違いを体験。条件を足して文章を組み立て、Alpha Labに引き継ぐデモ。',tags:'Qwen,プロンプト,編集,学習'},
- {id:'jev-evals',name:'Jev Eval Lab — 正しさと安定性',path:'/jev/evals',description:'合成スコアで正解率と分散の違いを体験。LangChainの検証値とコスト試算も確認できます。',tags:'Jev,LangChain,評価,比較'}
+ {id:'qwen-comfyui',name:'ComfyUI — 透過ワークフロー',path:'/qwen-image/comfyui',description:'ColabでComfyUIとQwenの実モデルを実行。生成・編集したPNGを読み込み、透過を確認します。',tags:'Qwen,ComfyUI,透過,学習'},
+ {id:'qwen-inference',name:'推論Lab — vLLM-Omni / SGLang',path:'/qwen-image/inference',description:'ColabでvLLM-OmniとSGLangを実行。同じ設定で得た画像と、モデル読込を含む実行時間を比較します。',tags:'Qwen,vLLM,SGLang,GPU'},
+ {id:'qwen-prompt-rewrite',name:'Prompt Lab — 依頼を具体化',path:'/qwen-image/prompt-rewrite',description:'ColabでPE-T2I・PE-I2Iを実行。実モデルの書き換え文を読み込み、Alpha Labへ引き継ぎます。',tags:'Qwen,プロンプト,編集,学習'},
+ {id:'jev-evals',name:'Jev Eval Lab — 正しさと安定性',path:'/jev/evals',description:'ColabからJevの実APIで繰り返し判定。人間の合否との一致率・スコア分散・応答時間を確認します。',tags:'Jev,LangChain,評価,比較'}
  ]);
 
  await install(db,'qwen-image-2026-09-21',[{id:'qwen-image',name:'Qwen Image 2.1 — Alpha Lab',path:'/qwen-image',description:'公式デモで画像生成・最大10枚の参照画像編集。背景切り替えと画素解析で透過を確認できます。',tags:'Qwen,画像生成,透過,RGBA'}]);
@@ -22,6 +22,7 @@ export async function ensureJevCatalog(db:D1Database){
  await install(db,release,newJevSites);
  await install(db,'jev-harness-2026-09-21',harnessSites);
  await install(db,'jev-browser-2026-09-21',[{id:'jev-browser',name:'Jev Browser Lab',path:'/jev/browser',description:'フライト検索画面を自動操作。DOMの観測・Jevの操作選択・実行履歴を見ながらブラウザエージェントを体験。',tags:'Jev,ブラウザ操作,エージェント'}]);
+ await refreshColabDescriptions(db);
 }
 async function install(db:D1Database,release:string,entries:typeof newJevSites){
   if(await db.prepare('SELECT key FROM catalog_installs WHERE key = ?').bind(release).first())return;
@@ -35,4 +36,14 @@ async function install(db:D1Database,release:string,entries:typeof newJevSites){
       .bind(s.id,s.name,origin+s.path,'その他',s.description,s.tags,'利用中',now,release,origin+s.path)),
     db.prepare('INSERT OR IGNORE INTO catalog_installs (key,applied_at) VALUES (?,?)').bind(release,now),
   ]);
+}
+
+async function refreshColabDescriptions(db:D1Database){
+ const key='colab-labs-descriptions-2026-09-21';
+ if(await db.prepare('SELECT key FROM catalog_installs WHERE key = ?').bind(key).first())return;
+ const updates=[["qwen-comfyui", "生成・編集の4工程をたどり、公式PNGのアルファを解析。ComfyUIの透過生成を学ぶデモ。", "ColabでComfyUIとQwenの実モデルを実行。生成・編集したPNGを読み込み、透過を確認します。"], ["qwen-inference", "キャッシュ・FP8・GPU並列化を操作して理解。計算の再利用を可視化する学習シミュレーション。", "ColabでvLLM-OmniとSGLangを実行。同じ設定で得た画像と、モデル読込を含む実行時間を比較します。"], ["qwen-prompt-rewrite", "生成用と編集用の違いを体験。条件を足して文章を組み立て、Alpha Labに引き継ぐデモ。", "ColabでPE-T2I・PE-I2Iを実行。実モデルの書き換え文を読み込み、Alpha Labへ引き継ぎます。"], ["jev-evals", "合成スコアで正解率と分散の違いを体験。LangChainの検証値とコスト試算も確認できます。", "ColabからJevの実APIで繰り返し判定。人間の合否との一致率・スコア分散・応答時間を確認します。"]];
+ await db.batch([
+  ...updates.map(([id,oldDescription,newDescription])=>db.prepare('UPDATE sites SET description = ? WHERE id = ? AND description = ?').bind(newDescription,id,oldDescription)),
+  db.prepare('INSERT OR IGNORE INTO catalog_installs (key,applied_at) VALUES (?,?)').bind(key,new Date().toISOString()),
+ ]);
 }
