@@ -8,6 +8,13 @@ export const newJevSites = [
 ];
 export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
+ await install(db,'release-labs-2026-09-22',[
+ {id:'grok-lab',name:'Grok — 実APIと提供経路',path:'/labs/grok',description:'Grok 4.7へ実際に依頼。Copilot・Bedrockとの違いと、料金の目安を確認します。',tags:'Grok,xAI,Copilot,Bedrock'},
+ {id:'kev-lab',name:'Kev — 3つの判断を同時に',path:'/labs/kev',description:'公開モデルで問い合わせを判定。担当部署・緊急性・不満度を同時に確かめます。',tags:'Kev,判断,確率,実モデル'},
+ {id:'python-workers-lab',name:'Python Workers — APIを体験',path:'/labs/python-workers',description:'ブラウザ内のPythonで見積もりを計算。APIの入力チェックとCloudflare連携の役割を学びます。',tags:'Python,Cloudflare,FastAPI,GPU不要'},
+ {id:'langsmith-jev-lab',name:'LangSmith × Jev — 履歴を評価',path:'/labs/langsmith',description:'実行履歴をJevの実APIで評価。評価値と確認基準、LangSmithへの導入手順を理解します。',tags:'Jev,LangSmith,評価,実行履歴'}
+ ]);
+
  await install(db,'interactive-notes-2026-09-21',[
  {id:'qwen-comfyui',name:'ComfyUI — 透過ワークフロー',path:'/qwen-image/comfyui',description:'ColabでComfyUIとQwenの実モデルを実行。生成・編集したPNGを読み込み、透過を確認します。',tags:'Qwen,ComfyUI,透過,学習'},
  {id:'qwen-inference',name:'推論Lab — vLLM-Omni / SGLang',path:'/qwen-image/inference',description:'ColabでvLLM-OmniとSGLangを実行。同じ設定で得た画像と、モデル読込を含む実行時間を比較します。',tags:'Qwen,vLLM,SGLang,GPU'},
