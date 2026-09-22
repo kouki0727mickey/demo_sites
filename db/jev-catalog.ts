@@ -8,6 +8,12 @@ export const newJevSites = [
 ];
 export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
+ await install(db,'release-labs-2026-09-23',[
+ {id:'jev-gateway-lab',name:'Jev × Gateway — 確率で判断',path:'/labs/jev-gateway',description:'Vercel経由の実判定。Choice・Score・Booleanをまとめて実行し、振り分け基準を体験します。',tags:'Jev,Vercel,Gateway,判断'},
+ {id:'grok-bedrock-lab',name:'Grok 4.6 × Bedrock — AWSで実行',path:'/labs/bedrock',description:'経路・モデルID・処理地域の違いを比較し、Bedrock APIキーで実際に依頼します。',tags:'Grok,AWS,Bedrock,実API'},
+ {id:'grok-copilot-lab',name:'Grok 4.7 × Copilot — 修正を検証',path:'/labs/copilot',description:'仕様とテストを添えてCopilotへ依頼し、持ち帰った設定を境界値テストで検証する演習。',tags:'Grok,Copilot,テスト,演習'},
+ {id:'mimo-lab',name:'MiMo V2.6 — 公開ウェイトとAPI',path:'/labs/mimo',description:'Pro・FlashのMoE構造とメモリの規模を比較。自分のGPUなしでMiMo APIを試せます。',tags:'MiMo,Xiaomi,MoE,公開ウェイト'}
+ ]);
  await install(db,'release-labs-2026-09-22',[
  {id:'grok-lab',name:'Grok — 実APIと提供経路',path:'/labs/grok',description:'Grok 4.7へ実際に依頼。Copilot・Bedrockとの違いと、料金の目安を確認します。',tags:'Grok,xAI,Copilot,Bedrock'},
  {id:'kev-lab',name:'Kev — 3つの判断を同時に',path:'/labs/kev',description:'公開モデルで問い合わせを判定。担当部署・緊急性・不満度を同時に確かめます。',tags:'Kev,判断,確率,実モデル'},
