@@ -31,3 +31,16 @@ test('Jev uses selected query and rejects malformed probabilities',async()=>{
  await assert.rejects(execute({kind:'cli',query:'noul',state:'refund',apiKey:'fake-test-key'},async()=>Response.json({answers:{result:{type:'noul',noul:2}}})));
  assert.match(cliCommand('score'),/-o answer_type score/);assert.match(cliCommand('choice'),/< message.txt$/);assert.equal(shellQuote("a'b"), "'a'\"'\"'b'");
 });
+
+test('long answers use selected limits for both APIs and enforce a bounded maximum',async()=>{
+ for(const model of ['claude-opus-5-5','gpt-6-sol','gpt-6-luna']){
+  const r=await execute({...input,model,maxOutput:32768},async(url,o)=>{
+   const b=JSON.parse(o.body);assert.equal(b.max_tokens??b.max_output_tokens,32768);
+   return Response.json(model==='claude-opus-5-5'?{stop_reason:'max_tokens',content:[{type:'text',text:'Partial'}]}:{status:'incomplete',incomplete_details:{reason:'max_output_tokens'},output:[{type:'message',content:[{type:'output_text',text:'Partial'}]}]});
+  });
+  assert.equal(r.maxOutput,32768);assert.equal(r.limitReached,true);assert.equal(r.incomplete,true);
+ }
+ await assert.rejects(execute({...input,maxOutput:999999},async()=>{throw Error('must not call')}),e=>e.status===400);
+ const r=await execute({...input,maxOutput:16384},async()=>Response.json({status:'completed',output:[{type:'message',content:[{type:'output_text',text:'Full answer'}]}]}));
+ assert.equal(r.incomplete,false);assert.equal(r.limitReached,false);
+});
