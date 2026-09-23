@@ -8,6 +8,12 @@ export const newJevSites = [
 ];
 export const harnessSites=[{id:'jev-harness',name:'Jev Harness Lab',path:'/jev/harness',description:'モデルルーティングとツールのリスク判定を3ステップで体験。しきい値を動かして実行・停止の分岐を学ぶデモ。',tags:'Jev,LangChain,ミドルウェア'}];
 export async function ensureJevCatalog(db:D1Database){
+ await install(db,'frontier-notes-2026-09-23',[
+ {id:'model-comparison-lab',name:'Opus・Sol・Luna — モデル比較',path:'/labs/model-comparison',description:'同じ依頼を3モデルへ送り、回答・時間・料金を比較。キーなしでも単価の違いを体験できます。',tags:'Claude,GPT-6,比較,実API'},
+ {id:'prompt-cache-lab',name:'Prompt Cache — 再利用を学ぶ',path:'/labs/prompt-cache',description:'保存境界と料金を操作して理解。実APIで共通資料の保存・再利用トークンを確かめます。',tags:'キャッシュ,GPT-6,Claude,料金'},
+ {id:'llm-typesafe-lab',name:'llm-typesafe — JevをCLIから',path:'/labs/llm-typesafe',description:'Yes/No・選択・採点をJevで実判定。同じ入力で使えるCLIコマンドを作成します。',tags:'Jev,CLI,確率,判断'},
+ {id:'gguf-lab',name:'GGUF — 小さなモデルを動かす',path:'/labs/gguf',description:'量子化のサイズと実行経路を比較。Macで動かすコードを作り、手元のGGUFヘッダーを確認。',tags:'GGUF,Transformers,量子化,Mac'}
+ ]);
  await install(db,'release-labs-2026-09-23',[
  {id:'jev-gateway-lab',name:'Jev × Gateway — 確率で判断',path:'/labs/jev-gateway',description:'Vercel経由の実判定。Choice・Score・Booleanをまとめて実行し、振り分け基準を体験します。',tags:'Jev,Vercel,Gateway,判断'},
  {id:'grok-bedrock-lab',name:'Grok 4.6 × Bedrock — AWSで実行',path:'/labs/bedrock',description:'経路・モデルID・処理地域の違いを比較し、Bedrock APIキーで実際に依頼します。',tags:'Grok,AWS,Bedrock,実API'},
